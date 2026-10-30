@@ -1,8 +1,4 @@
 # Agents.md — Instrucciones para el agente de IA (BooksApp)
-
-> Este archivo define cómo debe comportarse el agente al trabajar en este proyecto.
-> Cada apartado es independiente: puedes agregar, editar o eliminar secciones sin afectar las demás.
-
 ---
 
 ## 1. Rol del agente
@@ -143,11 +139,11 @@ app/src/main/java/com/ejemplo/booksapp/
 
 > Agregar a qui mas librerias en caso se usen
 
-- Navegación: *(por ejemplo, Navigation Compose)*
-- Red: *(por ejemplo, Retrofit + Kotlin Serialization)*
-- Base de datos local: *(por ejemplo, Room)*
-- Inyección de dependencias: *(por ejemplo, Hilt)*
-- Carga de imágenes: *(por ejemplo, Coil)*
+- Navegación: Navigation Compose
+- Red: Retrofit + Kotlin Serialization (https://openlibrary.org/)
+- Base de datos local: Room Database
+- Inyección de dependencias: Hilt
+- Carga de imágenes: Coil
 
 ---
 
@@ -158,6 +154,34 @@ app/src/main/java/com/ejemplo/booksapp/
 - Pruebas de interfaz para los flujos principales.
 
 ---
+
+## 12. Descripcion del proyecto
+
+- BooksApp es una aplicación móvil que permitirá a los usuarios buscar libros, 
+consultar información sobre sus obras y autores, y organizar su biblioteca 
+personal. La aplicación consumirá una API externa para obtener información 
+bibliográfica y portadas, mientras que los libros guardados por el usuario se 
+almacenarán localmente en el dispositivo. 
+
+- El usuario podrá agregar libros a su biblioteca, marcar sus favoritos y actualizar su 
+estado de lectura para identificar aquellos que ya leyó, que está leyendo o que 
+desea leer en el futuro. 
+
+- El proyecto busca integrar el consumo de servicios web, la persistencia local, la 
+carga de imágenes y la búsqueda de información, aplicando buenas prácticas de 
+desarrollo Android. 
+
+---
+
+## 13. Objetivo general
+
+- Desarrollar una aplicación móvil para la búsqueda y gestión de libros que integre 
+una API REST con una base de datos local, permitiendo organizar una biblioteca 
+personal mediante una interfaz intuitiva y funcional.
+
+---
+
+
 
 ## 12. Reglas adicionales
 
