@@ -1,3 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BooksApp</string>
+    <string name="app_name">BokksApp</string>
+    <string name="nombre_app_parte1">Bokks</string>
+    <string name="nombre_app_parte2">App</string>
+    
+    <!-- Pantalla Splash -->
+    <string name="splash_edicion_literaria">Edición Literaria</string>
+    <string name="splash_lema">Tu biblioteca personal, una manera de cultivar el aprendizaje.</string>
+    <string name="splash_cita">“Un libro es un sueño que tienes en la mano.”</string>
+    <string name="splash_etapa_1">Abriendo biblioteca...</string>
+    <string name="splash_etapa_2">Cargando notas y citas...</string>
+    <string name="splash_etapa_3">Verificando páginas leídas...</string>
+    <string name="splash_etapa_4">Todo listo para leer</string>
+    <string name="splash_pie_version">BooksApp v1.0.0  ITCA FEPADE</string>
+    <string name="cd_logo_app">Logotipo de BokksApp</string>
+    <string name="cd_icono_sincronizacion">Icono de sincronización</string>
+    <string name="cd_icono_lectura">Icono de lectura</string>
+
+    <!-- Pantalla Inicio -->
+    <string name="inicio_titulo">Inicio</string>
+    <string name="inicio_subtitulo_dia">Miércoles Literario</string>
+    <string name="inicio_saludo">¡Hola, Sofía!</string>
+    <string name="inicio_estado_api">API Conectada</string>
+    <string name="inicio_placeholder_buscar">Buscar por título, autor o ISBN...</string>
+    <string name="inicio_cd_notificaciones">Buscar o Notificaciones</string>
+    <string name="inicio_cd_perfil">Perfil del usuario</string>
+    <string name="inicio_cd_escanear">Escanear portada o código</string>
+    <string name="inicio_cd_favorito">Marcar o desmarcar favorito</string>
+
+    <!-- Categorías / Chips -->
+    <string name="categoria_para_ti">Para ti</string>
+    <string name="categoria_ficcion">Ficción</string>
+    <string name="categoria_scifi">Sci-Fi</string>
+    <string name="categoria_no_ficcion">No Ficción</string>
+    <string name="categoria_clasicos">Clásicos</string>
+
+    <!-- Secciones de Inicio -->
+    <string name="seccion_libro_momento">Libro del Momento</string>
+    <string name="badge_seleccion_editorial">Selección Editorial</string>
+    <string name="boton_anadir">Añadir</string>
+    <string name="boton_favorito">Favorito</string>
+    <string name="badge_hd">HD</string>
+    <string name="badge_api_v2">API v2</string>
+
+    <string name="seccion_ficcion_fantasia">Ficción y Fantasía</string>
+    <string name="seccion_scifi_distopia">Ciencia Ficción y Distopía</string>
+    <string name="enlace_ver_todo">Ver todo</string>
+    <string name="enlace_explorar">Explorar</string>
+
+    <string name="seccion_tendencias_comunidad">Tendencias de la Comunidad</string>
+    <string name="subtitulo_esta_semana">Esta semana</string>
+
+    <!-- Meta de lectura -->
+    <string name="meta_titulo">Objetivo de Lectura 2025</string>
+    <string name="meta_progreso_libros">18 de 25 libros leídos</string>
+    <string name="meta_porcentaje">72%</string>
+
+    <!-- Navegación Inferior -->
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_buscar">Buscar</string>
+    <string name="nav_mis_libros">Mis Libros</string>
+    <string name="nav_mi_lectura">Mi Lectura</string>
+
+    <!-- Estados UI -->
+    <string name="estado_cargando_libros">Cargando biblioteca literaria...</string>
+    <string name="estado_error_carga">Ocurrió un error al cargar los libros.</string>
+    <string name="boton_reintentar">Reintentar</string>
+    <string name="mensaje_proximamente">Esta sección estará disponible próximamente.</string>
 </resources>
