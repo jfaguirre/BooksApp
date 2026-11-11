@@ -54,4 +54,15 @@ object ClienteRetrofit {
             ""
         }
     }
+
+    /**
+     * Construye la URL de la foto del autor a partir de su ID de foto en Open Library.
+     */
+    fun construirUrlFotoAutor(idFoto: Long?, tamanio: String = "M"): String {
+        return if (idFoto != null && idFoto > 0) {
+            "https://covers.openlibrary.org/a/id/$idFoto-$tamanio.jpg"
+        } else {
+            ""
+        }
+    }
 }

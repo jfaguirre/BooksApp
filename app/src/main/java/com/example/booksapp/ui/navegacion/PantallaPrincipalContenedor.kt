@@ -1,14 +1,14 @@
 package com.example.booksapp.ui.navegacion
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Construction
+import androidx.compose.material.icons.filled.Construction
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,6 +28,7 @@ import com.example.booksapp.R
 import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.ui.componentes.BarraNavegacionInferior
 import com.example.booksapp.ui.componentes.DestinoNavegacion
+import com.example.booksapp.ui.pantallas.busqueda.PantallaBuscarLibros
 import com.example.booksapp.ui.pantallas.inicio.PantallaInicio
 import com.example.booksapp.ui.pantallas.lectura.PantallaMiLectura
 import com.example.booksapp.ui.pantallas.mislibros.PantallaMisLibros
@@ -39,6 +40,7 @@ import com.example.booksapp.ui.tema.ContenedorPrimario
 @Composable
 fun PantallaPrincipalContenedor(
     modifier: Modifier = Modifier,
+    alSeleccionarLibro: (LibroModelo) -> Unit = {},
     alAbrirLector: (LibroModelo) -> Unit = {}
 ) {
     var destinoActual by remember { mutableStateOf(DestinoNavegacion.INICIO) }
@@ -60,7 +62,13 @@ fun PantallaPrincipalContenedor(
             when (destinoActual) {
                 DestinoNavegacion.INICIO -> {
                     PantallaInicio(
-                        alSeleccionarLibro = alAbrirLector
+                        alSeleccionarLibro = alSeleccionarLibro
+                    )
+                }
+
+                DestinoNavegacion.BUSCAR -> {
+                    PantallaBuscarLibros(
+                        alSeleccionarLibro = alSeleccionarLibro
                     )
                 }
 
@@ -75,17 +83,13 @@ fun PantallaPrincipalContenedor(
                         alAbrirLector = alAbrirLector
                     )
                 }
-
-                DestinoNavegacion.BUSCAR -> {
-                    PantallaProximamente(destino = destinoActual)
-                }
             }
         }
     }
 }
 
 /**
- * Pantalla transitoria para las secciones que se implementarán posteriormente.
+ * Pantalla provisional para destinos de navegación que aún no han sido implementados.
  */
 @Composable
 private fun PantallaProximamente(
@@ -93,29 +97,30 @@ private fun PantallaProximamente(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(24.dp),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.padding(32.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Construction,
+                imageVector = Icons.Filled.Construction,
                 contentDescription = null,
                 tint = ContenedorPrimario,
                 modifier = Modifier.size(56.dp)
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = stringResource(id = destino.idTexto),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onBackground
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = stringResource(id = R.string.mensaje_proximamente),

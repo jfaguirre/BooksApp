@@ -34,11 +34,12 @@ import com.example.booksapp.ui.tema.Primario
 import com.example.booksapp.ui.tema.SobrePrimario
 
 /**
- * Barra superior de navegación para la pantalla de Inicio de BooksApp.
+ * Barra superior de navegación reutilizable para BooksApp.
  */
 @Composable
 fun BarraSuperior(
     modifier: Modifier = Modifier,
+    subtitulo: String = stringResource(id = R.string.inicio_titulo),
     alHacerClicNotificaciones: () -> Unit = {},
     alHacerClicPerfil: () -> Unit = {}
 ) {
@@ -70,7 +71,7 @@ fun BarraSuperior(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = stringResource(id = R.string.inicio_titulo),
+                    text = subtitulo,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

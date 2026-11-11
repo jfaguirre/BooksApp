@@ -53,8 +53,8 @@ fun TarjetaTendenciaComunidad(
     posicion: Int,
     libro: LibroModelo,
     alHacerClicAnadir: (LibroModelo) -> Unit,
-    modifier: Modifier = Modifier,
-    alHacerClic: (LibroModelo) -> Unit = {}
+    alHacerClic: (LibroModelo) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier

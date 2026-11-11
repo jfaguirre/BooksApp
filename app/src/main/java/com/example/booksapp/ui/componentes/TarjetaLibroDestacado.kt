@@ -63,8 +63,8 @@ fun TarjetaLibroDestacado(
     libro: LibroModelo,
     alHacerClicAnadir: (LibroModelo) -> Unit,
     alAlternarFavorito: (LibroModelo) -> Unit,
-    modifier: Modifier = Modifier,
-    alHacerClic: (LibroModelo) -> Unit = {}
+    alHacerClic: (LibroModelo) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier

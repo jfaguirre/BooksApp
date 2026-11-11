@@ -17,6 +17,9 @@ data class DocumentoBusquedaDto(
     val key: String,
     val title: String,
     @SerialName("author_name") val nombresAutores: List<String> = emptyList(),
+    @SerialName("author_key") val clavesAutores: List<String> = emptyList(),
     @SerialName("cover_i") val coverId: Long? = null,
-    @SerialName("first_publish_year") val primerAnioPublicacion: Int? = null
+    @SerialName("first_publish_year") val primerAnioPublicacion: Int? = null,
+    val publisher: List<String> = emptyList(),
+    @SerialName("ratings_average") val promedioCalificacion: Double? = null
 )
