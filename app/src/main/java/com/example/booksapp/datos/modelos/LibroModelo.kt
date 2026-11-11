@@ -14,12 +14,24 @@ data class LibroModelo(
     val cantidadCalificaciones: String = "(12.4k)",
     val etiqueta: String? = null,
     val lectores: String? = null,
-    val esFavorito: Boolean = false
+    val esFavorito: Boolean = false,
+    val editorial: String = "",
+    val clavesAutores: List<String> = emptyList(),
+    val temas: List<String> = emptyList(),
+    val tieneCalificacion: Boolean = true,
+    val esGuardado: Boolean = false
 ) {
     /**
      * Retorna los nombres de los autores formateados como una sola cadena de texto.
      */
     fun obtenerTextoAutores(): String {
         return if (autores.isEmpty()) "Autor Desconocido" else autores.joinToString(", ")
+    }
+
+    /**
+     * Retorna el identificador limpio de la obra sin el prefijo "/works/".
+     */
+    fun obtenerIdLimpio(): String {
+        return id.removePrefix("/works/").removePrefix("works/")
     }
 }
