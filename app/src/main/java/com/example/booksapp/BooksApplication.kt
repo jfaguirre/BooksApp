@@ -4,10 +4,12 @@ import android.app.Application
 import com.example.booksapp.datos.local.BooksAppDatabase
 import com.example.booksapp.datos.repositorios.BibliotecaRepositorio
 import com.example.booksapp.datos.repositorios.BibliotecaRepositorioImpl
+import com.example.booksapp.datos.repositorios.UsuarioRepositorio
+import com.example.booksapp.datos.repositorios.UsuarioRepositorioImpl
 
 /**
  * Clase Application de BooksApp. Inicializa la base de datos Room
- * y expone el repositorio de biblioteca como singleton.
+ * y expone los repositorios como singletons.
  */
 class BooksApplication : Application() {
 
@@ -19,6 +21,11 @@ class BooksApplication : Application() {
     /** Repositorio de biblioteca personal (inicialización diferida). */
     val bibliotecaRepositorio: BibliotecaRepositorio by lazy {
         BibliotecaRepositorioImpl(database.bibliotecaDao())
+    }
+
+    /** Repositorio de preferencias y perfil del usuario (inicialización diferida). */
+    val usuarioRepositorio: UsuarioRepositorio by lazy {
+        UsuarioRepositorioImpl(this)
     }
 }
 

@@ -6,4 +6,5 @@ package com.example.booksapp.ui.navegacion
 sealed class Ruta(val ruta: String) {
     data object Splash : Ruta("splash")
     data object Principal : Ruta("principal")
+    data object Lector : Ruta("lector")
 }

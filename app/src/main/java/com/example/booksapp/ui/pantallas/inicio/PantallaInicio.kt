@@ -22,28 +22,35 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.booksapp.BooksApplication
 import com.example.booksapp.R
+import com.example.booksapp.datos.modelos.CategoriaModelo
 import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.ui.componentes.BarraSuperior
 import com.example.booksapp.ui.componentes.TarjetaLibroDestacado
@@ -83,11 +91,62 @@ fun PantallaInicio(
     val application = context.applicationContext as BooksApplication
     val viewModel: InicioViewModel = viewModel(
         factory = InicioViewModel.Factory(
-            bibliotecaRepositorio = application.bibliotecaRepositorio
+            bibliotecaRepositorio = application.bibliotecaRepositorio,
+            usuarioRepositorio = application.usuarioRepositorio
         )
     )
     val estadoUi by viewModel.estadoUi.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    var mostrarDialogoEditarNombre by remember { mutableStateOf(false) }
+    var textoNuevoNombre by remember { mutableStateOf("") }
+
+    // Diálogo para personalizar y guardar localmente el nombre del usuario
+    if (mostrarDialogoEditarNombre) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoEditarNombre = false },
+            title = {
+                Text(
+                    text = stringResource(id = R.string.dialogo_nombre_titulo),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Primario
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.dialogo_nombre_descripcion),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = textoNuevoNombre,
+                        onValueChange = { textoNuevoNombre = it },
+                        label = { Text(stringResource(id = R.string.dialogo_nombre_campo)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.guardarNombreUsuario(textoNuevoNombre)
+                        mostrarDialogoEditarNombre = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = ContenedorPrimario)
+                ) {
+                    Text(stringResource(id = R.string.boton_guardar))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogoEditarNombre = false }) {
+                    Text(stringResource(id = R.string.boton_cancelar), color = Terciario)
+                }
+            }
+        )
+    }
 
     // Efecto para mostrar snackbar de confirmación al añadir libro
     LaunchedEffect(estadoUi) {
@@ -100,7 +159,13 @@ fun PantallaInicio(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            BarraSuperior()
+            BarraSuperior(
+                alHacerClicPerfil = {
+                    val estado = estadoUi as? InicioEstadoUi.Exito
+                    textoNuevoNombre = estado?.nombreUsuario ?: ""
+                    mostrarDialogoEditarNombre = true
+                }
+            )
         },
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { datos ->
@@ -171,6 +236,13 @@ fun PantallaInicio(
             }
 
             is InicioEstadoUi.Exito -> {
+                // La búsqueda activa tiene prioridad; si no, el chip de categoría filtra el contenido
+                val consultaActiva = estado.textoBusqueda.isNotBlank()
+                val categoriaSeleccionada = estado.categorias.firstOrNull { it.estaSeleccionada }
+                val filtroCategoriaActivo = !consultaActiva &&
+                    categoriaSeleccionada != null &&
+                    categoriaSeleccionada.claveMateriaApi != CategoriaModelo.CLAVE_MATERIA_TODAS
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -197,12 +269,38 @@ fun PantallaInicio(
                                         letterSpacing = 1.sp,
                                         fontWeight = FontWeight.Bold
                                     )
-                                    Text(
-                                        text = estado.saludo,
-                                        style = MaterialTheme.typography.headlineLarge,
-                                        color = Primario,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            text = estado.saludo,
+                                            style = MaterialTheme.typography.headlineLarge,
+                                            color = Primario,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.clickable {
+                                                textoNuevoNombre = estado.nombreUsuario
+                                                mostrarDialogoEditarNombre = true
+                                            }
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                textoNuevoNombre = estado.nombreUsuario
+                                                mostrarDialogoEditarNombre = true
+                                            },
+                                            modifier = Modifier
+                                                .size(30.dp)
+                                                .clip(CircleShape)
+                                                .background(ContenedorSuperficie)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Edit,
+                                                contentDescription = stringResource(id = R.string.inicio_cd_editar_nombre),
+                                                tint = Secundario,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
                                 }
 
                                 // Indicador de API Conectada
@@ -278,6 +376,26 @@ fun PantallaInicio(
                                     )
                                 }
 
+                                // Botón para limpiar la búsqueda activa
+                                if (estado.textoBusqueda.isNotEmpty()) {
+                                    IconButton(
+                                        onClick = { viewModel.limpiarBusqueda() },
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .clip(CircleShape)
+                                            .background(ContenedorSuperficie)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Close,
+                                            contentDescription = stringResource(id = R.string.inicio_cd_limpiar_busqueda),
+                                            tint = Terciario,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                }
+
                                 IconButton(
                                     onClick = { /* Escaneo futuro */ },
                                     modifier = Modifier
@@ -333,77 +451,107 @@ fun PantallaInicio(
                         }
                     }
 
-                    // Sección: Libro del Momento
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 14.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                    // Sección: Resultados de la búsqueda activa
+                    if (consultaActiva) {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 14.dp)
                             ) {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.LocalFireDepartment,
-                                        contentDescription = null,
-                                        tint = Secundario,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        text = stringResource(id = R.string.seccion_libro_momento),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Primario
-                                    )
-                                }
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Search,
+                                            contentDescription = null,
+                                            tint = Secundario,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            text = stringResource(
+                                                id = R.string.inicio_resultados_busqueda,
+                                                estado.librosResultadoBusqueda?.size ?: 0
+                                            ),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Primario
+                                        )
+                                    }
 
-                                Box(
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(TerciarioFijo)
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
                                     Text(
-                                        text = stringResource(id = R.string.badge_seleccion_editorial),
+                                        text = stringResource(id = R.string.inicio_limpiar_busqueda),
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Terciario,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 10.sp
+                                        color = Secundario,
+                                        modifier = Modifier.clickable { viewModel.limpiarBusqueda() }
                                     )
                                 }
-                            }
 
-                            Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
-                            estado.libroDelMomento?.let { libroMomento ->
-                                TarjetaLibroDestacado(
-                                    libro = libroMomento,
-                                    alHacerClicAnadir = { viewModel.añadirABiblioteca(it) },
-                                    alAlternarFavorito = { viewModel.alternarFavorito(it) }
-                                )
+                                when {
+                                    estado.estaBuscando -> {
+                                        Row(
+                                            modifier = Modifier.padding(vertical = 20.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = ContenedorPrimario,
+                                                strokeWidth = 2.dp,
+                                                modifier = Modifier.size(22.dp)
+                                            )
+                                            Text(
+                                                text = stringResource(id = R.string.inicio_buscando),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+
+                                    estado.librosResultadoBusqueda.isNullOrEmpty() -> {
+                                        Text(
+                                            text = stringResource(
+                                                id = R.string.inicio_sin_resultados,
+                                                estado.textoBusqueda.trim()
+                                            ),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    else -> {
+                                        LazyRow(
+                                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                        ) {
+                                            items(estado.librosResultadoBusqueda.orEmpty()) { libro ->
+                                                TarjetaLibroHorizontal(
+                                                    libro = libro,
+                                                    alHacerClic = { alSeleccionarLibro(it) },
+                                                    alAlternarFavorito = { viewModel.alternarFavorito(it) }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
 
-                    // Sección: Ficción y Fantasía (Carrusel)
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Row(
+                    // Sección: Libros filtrados por la categoría seleccionada
+                    if (filtroCategoriaActivo) {
+                        item {
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(horizontal = 16.dp, vertical = 14.dp)
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -416,176 +564,324 @@ fun PantallaInicio(
                                             .background(Secundario)
                                     )
                                     Text(
-                                        text = stringResource(id = R.string.seccion_ficcion_fantasia),
+                                        text = stringResource(
+                                            id = R.string.inicio_libros_categoria,
+                                            categoriaSeleccionada?.nombre.orEmpty(),
+                                            estado.librosFiltradosPorCategoria?.size ?: 0
+                                        ),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = Primario
                                     )
                                 }
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.clickable { }
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.enlace_ver_todo),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Secundario
-                                    )
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = null,
-                                        tint = Secundario,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
+                                Spacer(modifier = Modifier.height(12.dp))
 
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                                modifier = Modifier.padding(top = 4.dp)
-                            ) {
-                                items(estado.librosFiccionYFantasia) { libro ->
-                                    TarjetaLibroHorizontal(
-                                        libro = libro,
-                                        alHacerClic = { alSeleccionarLibro(it) },
-                                        alAlternarFavorito = { viewModel.alternarFavorito(it) }
-                                    )
+                                when {
+                                    estado.estaCargandoCategoria -> {
+                                        Row(
+                                            modifier = Modifier.padding(vertical = 20.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = ContenedorPrimario,
+                                                strokeWidth = 2.dp,
+                                                modifier = Modifier.size(22.dp)
+                                            )
+                                            Text(
+                                                text = stringResource(id = R.string.inicio_cargando_categoria),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+
+                                    estado.librosFiltradosPorCategoria.isNullOrEmpty() -> {
+                                        Text(
+                                            text = stringResource(id = R.string.inicio_categoria_sin_libros),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    else -> {
+                                        LazyRow(
+                                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                        ) {
+                                            items(estado.librosFiltradosPorCategoria.orEmpty()) { libro ->
+                                                TarjetaLibroHorizontal(
+                                                    libro = libro,
+                                                    alHacerClic = { alSeleccionarLibro(it) },
+                                                    alAlternarFavorito = { viewModel.alternarFavorito(it) }
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
-                    // Sección: Ciencia Ficción y Distopía (Carrusel)
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp)
-                        ) {
-                            Row(
+                    // Contenido habitual del inicio: solo visible sin búsqueda ni filtro de categoría
+                    if (!consultaActiva && !filtroCategoriaActivo) {
+
+                        // Sección: Libro del Momento
+                        item {
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(horizontal = 16.dp, vertical = 14.dp)
                             ) {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.LocalFireDepartment,
+                                            contentDescription = null,
+                                            tint = Secundario,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            text = stringResource(id = R.string.seccion_libro_momento),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Primario
+                                        )
+                                    }
+
                                     Box(
                                         modifier = Modifier
-                                            .size(width = 4.dp, height = 18.dp)
                                             .clip(CircleShape)
-                                            .background(Terciario)
-                                    )
-                                    Text(
-                                        text = stringResource(id = R.string.seccion_scifi_distopia),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Terciario
-                                    )
+                                            .background(TerciarioFijo)
+                                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.badge_seleccion_editorial),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = Terciario,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 10.sp
+                                        )
+                                    }
                                 }
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.clickable { }
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.enlace_explorar),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Terciario
-                                    )
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = null,
-                                        tint = Terciario,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                                modifier = Modifier.padding(top = 4.dp)
-                            ) {
-                                items(estado.librosSciFiYDistopia) { libro ->
-                                    TarjetaLibroHorizontal(
-                                        libro = libro,
-                                        alHacerClic = { alSeleccionarLibro(it) },
-                                        alAlternarFavorito = { viewModel.alternarFavorito(it) }
+                                estado.libroDelMomento?.let { libroMomento ->
+                                    TarjetaLibroDestacado(
+                                        libro = libroMomento,
+                                        alHacerClicAnadir = { viewModel.añadirABiblioteca(it) },
+                                        alAlternarFavorito = { viewModel.alternarFavorito(it) },
+                                        alHacerClic = { alSeleccionarLibro(it) }
                                     )
                                 }
                             }
                         }
-                    }
 
-                    // Sección: Tendencias de la Comunidad
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 10.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Groups,
-                                        contentDescription = null,
-                                        tint = ContenedorPrimario,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        text = stringResource(id = R.string.seccion_tendencias_comunidad),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Primario
-                                    )
-                                }
-
-                                Text(
-                                    text = stringResource(id = R.string.subtitulo_esta_semana),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
+                        // Sección: Ficción y Fantasía (Carrusel)
+                        item {
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
                             ) {
-                                estado.tendenciasComunidad.forEachIndexed { indice, libro ->
-                                    TarjetaTendenciaComunidad(
-                                        posicion = indice + 1,
-                                        libro = libro,
-                                        alHacerClicAnadir = { viewModel.añadirABiblioteca(libro) }
-                                    )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(width = 4.dp, height = 18.dp)
+                                                .clip(CircleShape)
+                                                .background(Secundario)
+                                        )
+                                        Text(
+                                            text = stringResource(id = R.string.seccion_ficcion_fantasia),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Primario
+                                        )
+                                    }
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.clickable { }
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.enlace_ver_todo),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Secundario
+                                        )
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                            contentDescription = null,
+                                            tint = Secundario,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+
+                                LazyRow(
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                ) {
+                                    items(estado.librosFiccionYFantasia) { libro ->
+                                        TarjetaLibroHorizontal(
+                                            libro = libro,
+                                            alHacerClic = { alSeleccionarLibro(it) },
+                                            alAlternarFavorito = { viewModel.alternarFavorito(it) }
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // Banner de Meta de Lectura
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 10.dp)
-                        ) {
-                            TarjetaMetaLectura()
+                        // Sección: Ciencia Ficción y Distopía (Carrusel)
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(width = 4.dp, height = 18.dp)
+                                                .clip(CircleShape)
+                                                .background(Terciario)
+                                        )
+                                        Text(
+                                            text = stringResource(id = R.string.seccion_scifi_distopia),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Terciario
+                                        )
+                                    }
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.clickable { }
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.enlace_explorar),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Terciario
+                                        )
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                            contentDescription = null,
+                                            tint = Terciario,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+
+                                LazyRow(
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                ) {
+                                    items(estado.librosSciFiYDistopia) { libro ->
+                                        TarjetaLibroHorizontal(
+                                            libro = libro,
+                                            alHacerClic = { alSeleccionarLibro(it) },
+                                            alAlternarFavorito = { viewModel.alternarFavorito(it) }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Sección: Tendencias de la Comunidad
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Groups,
+                                            contentDescription = null,
+                                            tint = ContenedorPrimario,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            text = stringResource(id = R.string.seccion_tendencias_comunidad),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Primario
+                                        )
+                                    }
+
+                                    Text(
+                                        text = stringResource(id = R.string.subtitulo_esta_semana),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    estado.tendenciasComunidad.forEachIndexed { indice, libro ->
+                                        TarjetaTendenciaComunidad(
+                                            posicion = indice + 1,
+                                            libro = libro,
+                                            alHacerClicAnadir = { viewModel.añadirABiblioteca(libro) },
+                                            alHacerClic = { alSeleccionarLibro(libro) }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Banner de Meta de Lectura
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                            ) {
+                                TarjetaMetaLectura()
+                            }
                         }
                     }
                 }

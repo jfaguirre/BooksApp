@@ -67,4 +67,43 @@
     <string name="estado_error_carga">Ocurrió un error al cargar los libros.</string>
     <string name="boton_reintentar">Reintentar</string>
     <string name="mensaje_proximamente">Esta sección estará disponible próximamente.</string>
+
+    <!-- Lector y Mi Lectura -->
+    <string name="boton_leer">Leer</string>
+    <string name="lector_titulo">Lector Literario</string>
+    <string name="lector_capitulo_uno">Capítulo 1</string>
+    <string name="lector_capitulo_dos">Capítulo 2</string>
+    <string name="lector_capitulo_tres">Capítulo 3</string>
+    <string name="lector_marcar_leido">Marcar como leído</string>
+    <string name="lector_completado">¡Completado!</string>
+    <string name="lector_fuente_tamano">Tamaño de letra</string>
+    <string name="lector_modo_dia">Claro</string>
+    <string name="lector_modo_sepia">Sepia</string>
+    <string name="lector_modo_noche">Oscuro</string>
+    <string name="lector_felicitacion">¡Felicidades! Has terminado de leer este libro.</string>
+    <string name="mi_lectura_titulo">Mis Lecturas en Curso</string>
+    <string name="mi_lectura_libros_en_curso">Libros en lectura actual (%1$d)</string>
+    <string name="mi_lectura_sin_libro_titulo">Sin lecturas activas</string>
+    <string name="mi_lectura_sin_libro_subtitulo">Selecciona cualquier libro de Inicio o Mis Libros para comenzar a leer.</string>
+    <string name="mi_lectura_continuar">Continuar Lectura</string>
+    <string name="mi_lectura_continuar_corto">Continuar</string>
+    <string name="mi_lectura_marcado_leido">¡Libro completado!</string>
+
+    <!-- Diálogo de Nombre de Usuario -->
+    <string name="dialogo_nombre_titulo">Personalizar tu nombre</string>
+    <string name="dialogo_nombre_descripcion">Ingresa tu nombre para personalizar tu saludo y experiencia en BooksApp.</string>
+    <string name="dialogo_nombre_campo">Tu nombre</string>
+    <string name="boton_guardar">Guardar</string>
+    <string name="boton_cancelar">Cancelar</string>
+    <string name="inicio_cd_editar_nombre">Editar tu nombre de lector</string>
+
+    <!-- Búsqueda y Filtros en Inicio -->
+    <string name="inicio_resultados_busqueda">Resultados de búsqueda (%1$d)</string>
+    <string name="inicio_sin_resultados">No se encontraron libros para \"%1$s\"</string>
+    <string name="inicio_limpiar_busqueda">Limpiar búsqueda</string>
+    <string name="inicio_libros_categoria">Libros de %1$s (%2$d)</string>
+    <string name="inicio_cargando_categoria">Cargando libros de la categoría...</string>
+    <string name="inicio_cd_limpiar_busqueda">Borrar búsqueda</string>
+    <string name="inicio_buscando">Buscando libros...</string>
+    <string name="inicio_categoria_sin_libros">No hay libros disponibles en esta categoría por ahora.</string>
 </resources>
