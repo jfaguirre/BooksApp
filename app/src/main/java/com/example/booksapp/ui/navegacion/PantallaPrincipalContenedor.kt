@@ -25,8 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.booksapp.R
+import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.ui.componentes.BarraNavegacionInferior
 import com.example.booksapp.ui.componentes.DestinoNavegacion
+import com.example.booksapp.ui.pantallas.busqueda.PantallaBuscarLibros
 import com.example.booksapp.ui.pantallas.inicio.PantallaInicio
 import com.example.booksapp.ui.tema.ContenedorPrimario
 
@@ -35,7 +37,8 @@ import com.example.booksapp.ui.tema.ContenedorPrimario
  */
 @Composable
 fun PantallaPrincipalContenedor(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alSeleccionarLibro: (LibroModelo) -> Unit = {}
 ) {
     var destinoActual by remember { mutableStateOf(DestinoNavegacion.INICIO) }
 
@@ -55,10 +58,17 @@ fun PantallaPrincipalContenedor(
         ) {
             when (destinoActual) {
                 DestinoNavegacion.INICIO -> {
-                    PantallaInicio()
+                    PantallaInicio(
+                        alSeleccionarLibro = alSeleccionarLibro
+                    )
                 }
 
-                DestinoNavegacion.BUSCAR,
+                DestinoNavegacion.BUSCAR -> {
+                    PantallaBuscarLibros(
+                        alSeleccionarLibro = alSeleccionarLibro
+                    )
+                }
+
                 DestinoNavegacion.MIS_LIBROS,
                 DestinoNavegacion.MI_LECTURA -> {
                     PantallaProximamente(destino = destinoActual)

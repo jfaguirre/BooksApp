@@ -28,7 +28,7 @@
     <string name="inicio_cd_escanear">Escanear portada o código</string>
     <string name="inicio_cd_favorito">Marcar o desmarcar favorito</string>
 
-    <!-- Categorías / Chips -->
+    <!-- Categorías / Chips de Inicio -->
     <string name="categoria_para_ti">Para ti</string>
     <string name="categoria_ficcion">Ficción</string>
     <string name="categoria_scifi">Sci-Fi</string>
@@ -62,9 +62,79 @@
     <string name="nav_mis_libros">Mis Libros</string>
     <string name="nav_mi_lectura">Mi Lectura</string>
 
-    <!-- Estados UI -->
+    <!-- Estados UI Generales -->
     <string name="estado_cargando_libros">Cargando biblioteca literaria...</string>
     <string name="estado_error_carga">Ocurrió un error al cargar los libros.</string>
     <string name="boton_reintentar">Reintentar</string>
     <string name="mensaje_proximamente">Esta sección estará disponible próximamente.</string>
+
+    <!-- Pantalla Buscar Libros -->
+    <string name="buscar_titulo">Buscar</string>
+    <string name="buscar_placeholder">Buscar por título, autor, ISBN o tema...</string>
+    <string name="buscar_cd_limpiar">Limpiar búsqueda</string>
+    <string name="buscar_cd_filtros">Filtros avanzados</string>
+
+    <!-- Chips de Filtros de Búsqueda -->
+    <string name="chip_todos">Todos</string>
+    <string name="chip_por_titulo">Por Título</string>
+    <string name="chip_por_autor">Por Autor</string>
+    <string name="chip_por_categoria">Por Categoría/Género</string>
+
+    <!-- Sección Explorar Géneros (Bento Grid) -->
+    <string name="buscar_seccion_generos">Explorar Géneros</string>
+    <string name="buscar_temas_activos">6 temas activos</string>
+    <string name="genero_misterio_titulo">Misterio &amp; Thriller</string>
+    <string name="genero_misterio_subtitulo">1,420 obras</string>
+    <string name="genero_clasicos_titulo">Clásicos Literarios</string>
+    <string name="genero_clasicos_subtitulo">Colección selecta</string>
+    <string name="genero_romance_titulo">Romance &amp; Drama</string>
+    <string name="genero_romance_subtitulo">Pasión de época</string>
+    <string name="genero_scifi_titulo">Ciencia Ficción</string>
+    <string name="genero_scifi_subtitulo">Mundos y futuros</string>
+    <string name="genero_filosofia_titulo">Filosofía e Historia</string>
+    <string name="genero_filosofia_subtitulo">Pensamiento vivo</string>
+    <string name="genero_tecnologia_titulo">Tecnología &amp; Ciencia</string>
+    <string name="genero_tecnologia_subtitulo">Datos y cosmos</string>
+
+    <!-- Estado API en Búsqueda -->
+    <string name="buscar_api_conectada">Conectado a OpenLibrary API</string>
+    <string name="buscar_resultados_formato">%1$d resultados encontrados</string>
+
+    <!-- Coincidencias en Catálogo -->
+    <string name="buscar_seccion_coincidencias">Coincidencias en Catálogo</string>
+    <string name="buscar_badge_verificado">ISBN • OLID Verificado</string>
+    <string name="badge_en_room">En Room DB</string>
+    <string name="badge_open_library">OpenLibrary API</string>
+    <string name="boton_guardar">+ Guardar</string>
+    <string name="boton_guardado">Guardado</string>
+    <string name="cd_guardar_libro">Guardar libro en biblioteca local</string>
+    <string name="cd_libro_guardado">Libro guardado en biblioteca local</string>
+
+    <!-- Banner Didáctico Offline -->
+    <string name="banner_offline_titulo">Base de Datos Local Offline</string>
+    <string name="banner_offline_descripcion">Los libros guardados se almacenan automáticamente en tu dispositivo para lectura y notas sin internet.</string>
+
+    <!-- Estados UI de Búsqueda -->
+    <string name="buscar_estado_cargando">Buscando en el catálogo universal...</string>
+    <string name="buscar_estado_vacio">No encontramos coincidencias para tu búsqueda.</string>
+    <string name="buscar_estado_vacio_sugerencia">Intenta con otro título, autor o selecciona uno de los géneros.</string>
+    <string name="buscar_estado_error_red">Sin conexión a internet. Revisa tu red o consulta tus libros locales.</string>
+    <string name="buscar_estado_error_general">Error al consultar Open Library: %1$s</string>
+
+    <!-- Pantallas de Detalle de Obra y Autor -->
+    <string name="detalle_obra_titulo">Detalle de Obra</string>
+    <string name="detalle_autor_titulo">Perfil de Autor</string>
+    <string name="detalle_seccion_sinopsis">Sinopsis</string>
+    <string name="detalle_seccion_temas">Temas y materias</string>
+    <string name="detalle_seccion_mas_autor">Más de este autor</string>
+    <string name="detalle_seccion_obras_autor">Obras y publicaciones</string>
+    <string name="detalle_seccion_biografia">Biografía</string>
+    <string name="detalle_editorial">Editorial: %1$s</string>
+    <string name="detalle_cd_volver">Regresar</string>
+    <string name="detalle_cd_portada">Portada del libro</string>
+    <string name="detalle_cd_foto_autor">Fotografía del autor</string>
+    <string name="detalle_sin_obras_adicionales">No se encontraron otras obras de este autor.</string>
+    <string name="detalle_sin_temas">Literatura universal</string>
+    <string name="detalle_ver_perfil_autor">Ver perfil del autor</string>
+    <string name="detalle_leer_obra">Leer ahora</string>
 </resources>
