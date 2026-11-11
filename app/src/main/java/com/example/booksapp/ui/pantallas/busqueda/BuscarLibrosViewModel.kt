@@ -9,6 +9,7 @@ import com.example.booksapp.datos.modelos.TipoFiltroBusqueda
 import com.example.booksapp.datos.repositorios.LibroRepositorio
 import com.example.booksapp.datos.repositorios.LibroRepositorioImpl
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +39,8 @@ class BuscarLibrosViewModel(
 
     val idsLibrosGuardados: StateFlow<Set<String>> = accionesBiblioteca.idsLibrosGuardados
 
+    private var busquedaJob: Job? = null
+
     init {
         // Debounce de 500 ms para el campo de búsqueda
         viewModelScope.launch {
@@ -65,9 +68,10 @@ class BuscarLibrosViewModel(
     }
 
     /**
-     * Limpia el texto de búsqueda.
+     * Limpia el texto de búsqueda y cancela cualquier consulta en curso.
      */
     fun limpiarBusqueda() {
+        busquedaJob?.cancel()
         _textoBusqueda.value = ""
         _estadoUi.value = BuscarLibrosEstadoUi.Vacio(consulta = "")
     }
@@ -104,12 +108,15 @@ class BuscarLibrosViewModel(
     }
 
     /**
-     * Realiza la consulta al repositorio y actualiza el estado de la UI según el resultado.
+     * Realiza la consulta al repositorio y actualiza el estado de la UI según el resultado,
+     * cancelando cualquier búsqueda previa aún en ejecución para evitar condiciones de carrera.
      */
     fun ejecutarBusqueda(
         consulta: String = _textoBusqueda.value,
         filtro: TipoFiltroBusqueda = _filtroSeleccionado.value
     ) {
+        busquedaJob?.cancel()
+
         val consultaLimpia = consulta.trim()
         if (consultaLimpia.isEmpty()) {
             _estadoUi.value = BuscarLibrosEstadoUi.Vacio(consulta = "")
@@ -118,7 +125,7 @@ class BuscarLibrosViewModel(
 
         _estadoUi.value = BuscarLibrosEstadoUi.Cargando
 
-        viewModelScope.launch {
+        busquedaJob = viewModelScope.launch {
             try {
                 val resultado = repositorio.buscarLibrosPorFiltro(
                     consulta = consultaLimpia,
