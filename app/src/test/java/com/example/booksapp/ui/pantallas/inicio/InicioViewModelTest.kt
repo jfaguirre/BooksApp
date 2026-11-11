@@ -1,7 +1,10 @@
 package com.example.booksapp.ui.pantallas.inicio
 
 import com.example.booksapp.datos.modelos.CategoriaModelo
+import com.example.booksapp.datos.modelos.DetalleAutorModelo
+import com.example.booksapp.datos.modelos.DetalleObraModelo
 import com.example.booksapp.datos.modelos.LibroModelo
+import com.example.booksapp.datos.modelos.TipoFiltroBusqueda
 import com.example.booksapp.datos.repositorios.LibroRepositorio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,6 +36,40 @@ private class FalsoLibroRepositorio : LibroRepositorio {
     override suspend fun obtenerLibrosPorMateria(materia: String, limite: Int): Result<List<LibroModelo>> = Result.success(librosFantasia)
     override suspend fun obtenerTendencias(limite: Int): Result<List<LibroModelo>> = Result.success(emptyList())
     override suspend fun buscarLibros(consulta: String, limite: Int): Result<List<LibroModelo>> = Result.success(emptyList())
+
+    override suspend fun buscarLibrosPorFiltro(
+        consulta: String,
+        tipoFiltro: TipoFiltroBusqueda,
+        limite: Int
+    ): Result<List<LibroModelo>> = Result.success(emptyList())
+
+    override suspend fun obtenerDetalleObra(idObra: String): Result<DetalleObraModelo> =
+        Result.success(
+            DetalleObraModelo(
+                id = idObra,
+                claveCompleta = "/works/$idObra",
+                titulo = "Obra Falsa",
+                descripcion = "Descripción de prueba",
+                urlPortada = ""
+            )
+        )
+
+    override suspend fun obtenerDetalleAutor(idAutor: String): Result<DetalleAutorModelo> =
+        Result.success(
+            DetalleAutorModelo(
+                id = idAutor,
+                claveCompleta = "/authors/$idAutor",
+                nombre = "Autor Falso",
+                biografia = "Biografía de prueba",
+                urlFoto = ""
+            )
+        )
+
+    override suspend fun obtenerObrasDeAutor(
+        idAutor: String,
+        excluirIdObra: String?,
+        limite: Int
+    ): Result<List<LibroModelo>> = Result.success(emptyList())
 }
 
 /**
