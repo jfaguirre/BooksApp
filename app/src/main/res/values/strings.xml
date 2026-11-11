@@ -130,11 +130,23 @@
     <string name="detalle_seccion_obras_autor">Obras y publicaciones</string>
     <string name="detalle_seccion_biografia">Biografía</string>
     <string name="detalle_editorial">Editorial: %1$s</string>
+    <string name="detalle_publicado_en">Primera edición: %1$s</string>
     <string name="detalle_cd_volver">Regresar</string>
     <string name="detalle_cd_portada">Portada del libro</string>
     <string name="detalle_cd_foto_autor">Fotografía del autor</string>
+    <string name="detalle_cd_favorito">Marcar o desmarcar favorito</string>
     <string name="detalle_sin_obras_adicionales">No se encontraron otras obras de este autor.</string>
     <string name="detalle_sin_temas">Literatura universal</string>
     <string name="detalle_ver_perfil_autor">Ver perfil del autor</string>
     <string name="detalle_leer_obra">Leer ahora</string>
+    <string name="detalle_ver_mas">Ver más</string>
+    <string name="detalle_ver_menos">Ver menos</string>
+    <string name="detalle_sin_descripcion">No hay descripción disponible para esta obra en Open Library.</string>
+    <string name="detalle_sin_biografia">No hay biografía disponible para este autor en Open Library.</string>
+    <string name="detalle_agregar_biblioteca">Agregar a biblioteca</string>
+    <string name="detalle_guardado_biblioteca">Guardado en biblioteca</string>
+    <string name="detalle_estado_cargando_obra">Cargando información de la obra...</string>
+    <string name="detalle_estado_cargando_autor">Cargando perfil del autor...</string>
+    <string name="detalle_estado_vacio_obra">No se encontró información para esta obra.</string>
+    <string name="detalle_estado_vacio_autor">No se encontró información para este autor.</string>
 </resources>
