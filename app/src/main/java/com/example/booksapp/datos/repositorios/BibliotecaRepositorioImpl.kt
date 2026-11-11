@@ -30,9 +30,38 @@ class BibliotecaRepositorioImpl(
         }
     }
 
+    override suspend fun alternarFavorito(libro: LibroModelo): Boolean {
+        return withContext(Dispatchers.IO) {
+            val existente = dao.obtenerLibroPorId(libro.id)
+            if (existente != null) {
+                val nuevoEstado = !existente.esFavorito
+                dao.actualizarFavorito(libro.id, nuevoEstado)
+                nuevoEstado
+            } else {
+                val nuevoLibro = libro.copy(esFavorito = true)
+                dao.guardarLibro(nuevoLibro.aEntidad(EstadoLectura.POR_LEER))
+                true
+            }
+        }
+    }
+
     override suspend fun alternarFavorito(id: String, esFavorito: Boolean) {
         withContext(Dispatchers.IO) {
-            dao.actualizarFavorito(id, esFavorito)
+            val existente = dao.obtenerLibroPorId(id)
+            if (existente != null) {
+                dao.actualizarFavorito(id, esFavorito)
+            }
+        }
+    }
+
+    override suspend fun iniciarLectura(libro: LibroModelo) {
+        withContext(Dispatchers.IO) {
+            val existente = dao.obtenerLibroPorId(libro.id)
+            if (existente == null) {
+                dao.guardarLibro(libro.aEntidad(EstadoLectura.LEYENDO))
+            } else {
+                dao.actualizarEstadoLectura(libro.id, EstadoLectura.LEYENDO)
+            }
         }
     }
 
@@ -50,11 +79,26 @@ class BibliotecaRepositorioImpl(
         }
     }
 
+    override suspend fun obtenerLibroPorId(id: String): LibroModelo? {
+        return withContext(Dispatchers.IO) {
+            dao.obtenerLibroPorId(id)?.aModelo()
+        }
+    }
+
     override fun observarBiblioteca(): Flow<List<LibroModelo>> =
         dao.observarTodosLosLibros().map { lista -> lista.map { it.aModelo() } }
 
     override fun observarFavoritos(): Flow<List<LibroModelo>> =
         dao.observarFavoritos().map { lista -> lista.map { it.aModelo() } }
+
+    override fun observarIdsFavoritos(): Flow<Set<String>> =
+        dao.observarIdsFavoritos().map { it.toSet() }
+
+    override fun observarLibroEnLecturaActiva(): Flow<LibroModelo?> =
+        dao.observarLibroEnLecturaActiva().map { it?.aModelo() }
+
+    override fun observarLibrosEnLectura(): Flow<List<LibroModelo>> =
+        dao.observarLibrosEnLectura().map { lista -> lista.map { it.aModelo() } }
 
     override fun observarPorEstado(estado: EstadoLectura): Flow<List<LibroModelo>> =
         dao.observarLibrosPorEstado(estado).map { lista -> lista.map { it.aModelo() } }

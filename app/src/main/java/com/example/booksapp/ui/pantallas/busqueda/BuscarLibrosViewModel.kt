@@ -1,11 +1,13 @@
 package com.example.booksapp.ui.pantallas.busqueda
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.booksapp.datos.local.AccionesBiblioteca
 import com.example.booksapp.datos.local.AccionesBibliotecaProvisional
 import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.datos.modelos.TipoFiltroBusqueda
+import com.example.booksapp.datos.repositorios.BibliotecaRepositorio
 import com.example.booksapp.datos.repositorios.LibroRepositorio
 import com.example.booksapp.datos.repositorios.LibroRepositorioImpl
 import kotlinx.coroutines.FlowPreview
@@ -20,11 +22,13 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * ViewModel que gestiona la lógica de presentación, filtros y búsqueda de libros con debounce.
+ * ViewModel que gestiona la lógica de presentación, filtros y búsqueda de libros con debounce,
+ * sincronizando favoritos y biblioteca personal en tiempo real con la base de datos Room.
  */
 @OptIn(FlowPreview::class)
 class BuscarLibrosViewModel(
     private val repositorio: LibroRepositorio = LibroRepositorioImpl(),
+    private val bibliotecaRepositorio: BibliotecaRepositorio? = null,
     private val accionesBiblioteca: AccionesBiblioteca = AccionesBibliotecaProvisional.instancia
 ) : ViewModel() {
 
@@ -37,11 +41,36 @@ class BuscarLibrosViewModel(
     private val _estadoUi = MutableStateFlow<BuscarLibrosEstadoUi>(BuscarLibrosEstadoUi.Cargando)
     val estadoUi: StateFlow<BuscarLibrosEstadoUi> = _estadoUi.asStateFlow()
 
-    val idsLibrosGuardados: StateFlow<Set<String>> = accionesBiblioteca.idsLibrosGuardados
+    private val _idsFavoritos = MutableStateFlow<Set<String>>(emptySet())
+    val idsFavoritos: StateFlow<Set<String>> = _idsFavoritos.asStateFlow()
+
+    private val _idsLibrosGuardados = MutableStateFlow<Set<String>>(emptySet())
+    val idsLibrosGuardados: StateFlow<Set<String>> = _idsLibrosGuardados.asStateFlow()
 
     private var busquedaJob: Job? = null
 
     init {
+        // Observar IDs favoritos y libros guardados de Room si bibliotecaRepositorio está disponible
+        bibliotecaRepositorio?.let { repo ->
+            viewModelScope.launch {
+                repo.observarIdsFavoritos().collect { ids ->
+                    _idsFavoritos.value = ids
+                }
+            }
+            viewModelScope.launch {
+                repo.observarBiblioteca().collect { lista ->
+                    _idsLibrosGuardados.value = lista.map { it.id }.toSet()
+                }
+            }
+        } ?: run {
+            // Respaldo provisional en caso de no tener repositorio Room inyectado
+            viewModelScope.launch {
+                accionesBiblioteca.idsLibrosGuardados.collect { ids ->
+                    _idsLibrosGuardados.value = ids
+                }
+            }
+        }
+
         // Debounce de 500 ms para el campo de búsqueda
         viewModelScope.launch {
             _textoBusqueda
@@ -99,11 +128,33 @@ class BuscarLibrosViewModel(
     }
 
     /**
-     * Guarda un libro en la biblioteca local mediante [AccionesBiblioteca].
+     * Alterna el estado de favorito de un libro en Room Database.
+     * Si no existe en la biblioteca, Room lo inserta marcado como favorito.
+     * Si ya existe, invierte su estado esFavorito.
+     */
+    fun alternarFavorito(libro: LibroModelo) {
+        val repo = bibliotecaRepositorio
+        if (repo != null) {
+            viewModelScope.launch {
+                repo.alternarFavorito(libro)
+            }
+        }
+    }
+
+    /**
+     * Guarda un libro en la biblioteca local mediante [BibliotecaRepositorio] (Room)
+     * o mediante el mecanismo provisional de respaldo.
      */
     fun guardarLibro(libro: LibroModelo) {
-        viewModelScope.launch {
-            accionesBiblioteca.guardarLibro(libro)
+        val repo = bibliotecaRepositorio
+        if (repo != null) {
+            viewModelScope.launch {
+                repo.guardarLibro(libro)
+            }
+        } else {
+            viewModelScope.launch {
+                accionesBiblioteca.guardarLibro(libro)
+            }
         }
     }
 
@@ -168,5 +219,20 @@ class BuscarLibrosViewModel(
             }
         }
     }
-}
 
+    /**
+     * Factoría para instanciar [BuscarLibrosViewModel] con sus dependencias de Room.
+     */
+    class Factory(
+        private val repositorio: LibroRepositorio = LibroRepositorioImpl(),
+        private val bibliotecaRepositorio: BibliotecaRepositorio
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return BuscarLibrosViewModel(
+                repositorio = repositorio,
+                bibliotecaRepositorio = bibliotecaRepositorio
+            ) as T
+        }
+    }
+}

@@ -8,4 +8,11 @@ data class CategoriaModelo(
     val nombre: String,
     val claveMateriaApi: String,
     val estaSeleccionada: Boolean = false
-)
+) {
+    companion object {
+        /**
+         * Clave especial de materia que representa la vista general sin filtro de categoría.
+         */
+        const val CLAVE_MATERIA_TODAS = "all"
+    }
+}

@@ -71,6 +71,24 @@ interface BibliotecaDao {
     fun observarFavoritos(): Flow<List<LibroBibliotecaEntidad>>
 
     /**
+     * Obtiene los IDs de todos los libros marcados como favoritos.
+     */
+    @Query("SELECT id FROM libros_biblioteca WHERE esFavorito = 1")
+    fun observarIdsFavoritos(): Flow<List<String>>
+
+    /**
+     * Obtiene el libro en lectura activa más reciente (o null si no hay).
+     */
+    @Query("SELECT * FROM libros_biblioteca WHERE estadoLectura = 'LEYENDO' ORDER BY fechaActualizacion DESC LIMIT 1")
+    fun observarLibroEnLecturaActiva(): Flow<LibroBibliotecaEntidad?>
+
+    /**
+     * Obtiene todos los libros en lectura activa ordenados por fecha de actualización más reciente.
+     */
+    @Query("SELECT * FROM libros_biblioteca WHERE estadoLectura = 'LEYENDO' ORDER BY fechaActualizacion DESC")
+    fun observarLibrosEnLectura(): Flow<List<LibroBibliotecaEntidad>>
+
+    /**
      * Obtiene los libros filtrados por estado de lectura.
      */
     @Query("SELECT * FROM libros_biblioteca WHERE estadoLectura = :estado ORDER BY fechaAgregado DESC")

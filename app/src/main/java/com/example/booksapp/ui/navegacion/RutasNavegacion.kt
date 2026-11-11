@@ -6,7 +6,6 @@ package com.example.booksapp.ui.navegacion
 sealed class Ruta(val ruta: String) {
     data object Splash : Ruta("splash")
     data object Principal : Ruta("principal")
-
     data object DetalleObra : Ruta("detalle_obra/{idObra}") {
         fun crearRuta(idObra: String): String {
             val idLimpio = idObra.removePrefix("/works/").removePrefix("works/")
@@ -20,4 +19,6 @@ sealed class Ruta(val ruta: String) {
             return "detalle_autor/$idLimpio"
         }
     }
+
+    data object Lector : Ruta("lector")
 }

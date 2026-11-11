@@ -18,6 +18,7 @@ sealed interface InicioEstadoUi {
      */
     data class Exito(
         val saludo: String = "¡Hola, Sofía!",
+        val nombreUsuario: String = "Sofía",
         val estaApiConectada: Boolean = true,
         val textoBusqueda: String = "",
         val categorias: List<CategoriaModelo> = emptyList(),
@@ -25,6 +26,10 @@ sealed interface InicioEstadoUi {
         val librosFiccionYFantasia: List<LibroModelo> = emptyList(),
         val librosSciFiYDistopia: List<LibroModelo> = emptyList(),
         val tendenciasComunidad: List<LibroModelo> = emptyList(),
+        val librosFiltradosPorCategoria: List<LibroModelo>? = null,
+        val estaCargandoCategoria: Boolean = false,
+        val librosResultadoBusqueda: List<LibroModelo>? = null,
+        val estaBuscando: Boolean = false,
         val mensajeConfirmacion: String? = null
     ) : InicioEstadoUi
 

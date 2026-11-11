@@ -111,8 +111,7 @@ class MisLibrosViewModel(
      */
     fun alternarFavorito(libro: LibroModelo) {
         viewModelScope.launch {
-            val nuevoEstado = !libro.esFavorito
-            repositorio.alternarFavorito(libro.id, nuevoEstado)
+            val nuevoEstado = repositorio.alternarFavorito(libro)
             val mensaje = if (nuevoEstado) "Añadido a favoritos" else "Eliminado de favoritos"
             mostrarSnackbar(mensaje)
         }

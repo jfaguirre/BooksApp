@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.BookmarkAdd
@@ -96,7 +97,8 @@ import com.example.booksapp.ui.tema.TerciarioFijo
  */
 @Composable
 fun PantallaMisLibros(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alSeleccionarLibro: (LibroModelo) -> Unit = {}
 ) {
     val context = LocalContext.current
     val application = context.applicationContext as BooksApplication
@@ -189,6 +191,7 @@ fun PantallaMisLibros(
                                 ) { libro ->
                                     TarjetaLibroBiblioteca(
                                         libro = libro,
+                                        onSeleccionar = { alSeleccionarLibro(libro) },
                                         onAlternarFavorito = { viewModel.alternarFavorito(libro) },
                                         onCambiarEstado = { estado ->
                                             viewModel.cambiarEstadoLectura(libro, estado)
@@ -231,7 +234,7 @@ private fun EncabezadoBiblioteca(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             ChipEstadistica(
-                icono = Icons.Filled.LibraryBooks,
+                icono = Icons.AutoMirrored.Filled.LibraryBooks,
                 valor = "$total",
                 etiqueta = "Total",
                 colorFondo = ContenedorSuperficie,
@@ -315,7 +318,7 @@ private fun PestañasBiblioteca(
     )
 
     val pestañas = listOf(
-        ItemPestaña(PestañaBiblioteca.TODOS, "Todos", Icons.Filled.LibraryBooks),
+        ItemPestaña(PestañaBiblioteca.TODOS, "Todos", Icons.AutoMirrored.Filled.LibraryBooks),
         ItemPestaña(PestañaBiblioteca.FAVORITOS, "Favoritos", Icons.Filled.Favorite),
         ItemPestaña(PestañaBiblioteca.POR_LEER, "Por leer", Icons.Filled.BookmarkAdd),
         ItemPestaña(PestañaBiblioteca.LEYENDO, "Leyendo", Icons.AutoMirrored.Filled.MenuBook),
@@ -366,7 +369,7 @@ private fun ContenidoVacio(
 ) {
     val (icono, titulo, subtitulo) = when (pestaña) {
         PestañaBiblioteca.TODOS -> Triple(
-            Icons.Filled.LibraryBooks,
+            Icons.AutoMirrored.Filled.LibraryBooks,
             "Tu biblioteca está vacía",
             "Añade libros desde la pantalla de Inicio tocando \"Añadir\""
         )
@@ -432,12 +435,15 @@ private fun TarjetaLibroBiblioteca(
     onAlternarFavorito: () -> Unit,
     onCambiarEstado: (EstadoLectura) -> Unit,
     onEliminar: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSeleccionar: () -> Unit = {}
 ) {
     var mostrarMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onSeleccionar() },
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = ContenedorSuperficieBajo),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.booksapp.BooksApplication
 import com.example.booksapp.R
 import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.ui.tema.ContenedorPrimario
@@ -94,9 +95,16 @@ fun PantallaDetalleObra(
     alVolver: () -> Unit,
     alClicAutor: (String) -> Unit,
     alClicObra: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: DetalleObraViewModel = viewModel()
+    modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as BooksApplication
+    val viewModel: DetalleObraViewModel = viewModel(
+        factory = DetalleObraViewModel.Factory(
+            bibliotecaRepositorio = application.bibliotecaRepositorio
+        )
+    )
+
     LaunchedEffect(idObra) {
         viewModel.cargarDetalleObra(idObra)
     }

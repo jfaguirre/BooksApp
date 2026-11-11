@@ -20,13 +20,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +63,7 @@ import java.util.Locale
 
 /**
  * Tarjeta de libro para la sección "Coincidencias en Catálogo" replicando el diseño de Stitch.
+ * Incluye botón de favorito sincronizado con Room DB y botón de guardado.
  */
 @Composable
 fun TarjetaLibroBusqueda(
@@ -67,6 +71,8 @@ fun TarjetaLibroBusqueda(
     estaGuardado: Boolean,
     alSeleccionarLibro: (LibroModelo) -> Unit,
     alGuardarLibro: (LibroModelo) -> Unit,
+    alAlternarFavorito: (LibroModelo) -> Unit = {},
+    esFavorito: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -116,6 +122,24 @@ fun TarjetaLibroBusqueda(
                             )
                         )
                 )
+
+                // Botón flotante de favorito en la portada
+                IconButton(
+                    onClick = { alAlternarFavorito(libro) },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp)
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                ) {
+                    Icon(
+                        imageVector = if (esFavorito) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = stringResource(id = R.string.inicio_cd_favorito),
+                        tint = Secundario,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
 
             // Información bibliográfica y botones
@@ -320,4 +344,3 @@ fun TarjetaLibroBusqueda(
         }
     }
 }
-

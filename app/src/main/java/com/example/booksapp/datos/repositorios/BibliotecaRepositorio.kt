@@ -15,8 +15,14 @@ interface BibliotecaRepositorio {
     /** Elimina un libro de la biblioteca local. */
     suspend fun eliminarLibro(id: String)
 
+    /** Alterna el favorito de un libro por su modelo. Devuelve el nuevo estado booleano. */
+    suspend fun alternarFavorito(libro: LibroModelo): Boolean
+
     /** Alterna el favorito de un libro. Devuelve el nuevo estado. */
     suspend fun alternarFavorito(id: String, esFavorito: Boolean)
+
+    /** Registra o actualiza un libro para iniciar su lectura. */
+    suspend fun iniciarLectura(libro: LibroModelo)
 
     /** Cambia el estado de lectura de un libro. */
     suspend fun cambiarEstadoLectura(id: String, estado: EstadoLectura)
@@ -24,11 +30,23 @@ interface BibliotecaRepositorio {
     /** Verifica si un libro está guardado. */
     suspend fun estaGuardado(id: String): Boolean
 
+    /** Obtiene un libro por su ID si existe. */
+    suspend fun obtenerLibroPorId(id: String): LibroModelo?
+
     /** Flujo reactivo de todos los libros de la biblioteca. */
     fun observarBiblioteca(): Flow<List<LibroModelo>>
 
     /** Flujo reactivo de los favoritos. */
     fun observarFavoritos(): Flow<List<LibroModelo>>
+
+    /** Flujo reactivo de los IDs de libros favoritos. */
+    fun observarIdsFavoritos(): Flow<Set<String>>
+
+    /** Flujo reactivo del libro en lectura activa (estado LEYENDO más reciente). */
+    fun observarLibroEnLecturaActiva(): Flow<LibroModelo?>
+
+    /** Flujo reactivo de todos los libros que el usuario está leyendo actualmente. */
+    fun observarLibrosEnLectura(): Flow<List<LibroModelo>>
 
     /** Flujo reactivo de libros por estado de lectura. */
     fun observarPorEstado(estado: EstadoLectura): Flow<List<LibroModelo>>

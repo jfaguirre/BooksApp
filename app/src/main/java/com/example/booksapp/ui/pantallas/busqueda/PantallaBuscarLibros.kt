@@ -64,6 +64,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -72,6 +73,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.booksapp.BooksApplication
 import com.example.booksapp.R
 import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.datos.modelos.TipoFiltroBusqueda
@@ -95,13 +97,21 @@ import com.example.booksapp.ui.tema.Terciario
 @Composable
 fun PantallaBuscarLibros(
     modifier: Modifier = Modifier,
-    viewModel: BuscarLibrosViewModel = viewModel(),
     alSeleccionarLibro: (LibroModelo) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as BooksApplication
+    val viewModel: BuscarLibrosViewModel = viewModel(
+        factory = BuscarLibrosViewModel.Factory(
+            bibliotecaRepositorio = application.bibliotecaRepositorio
+        )
+    )
+
     val textoBusqueda by viewModel.textoBusqueda.collectAsState()
     val filtroSeleccionado by viewModel.filtroSeleccionado.collectAsState()
     val estadoUi by viewModel.estadoUi.collectAsState()
     val idsGuardados by viewModel.idsLibrosGuardados.collectAsState()
+    val idsFavoritos by viewModel.idsFavoritos.collectAsState()
     val gestorFoco = LocalFocusManager.current
 
     // Transición infinita para el indicador de pulso de la API
@@ -569,11 +579,14 @@ fun PantallaBuscarLibros(
                     items(estado.libros, key = { it.id }) { libro ->
                         val idLimpio = libro.obtenerIdLimpio()
                         val guardado = idsGuardados.contains(libro.id) || idsGuardados.contains(idLimpio)
+                        val esFavorito = idsFavoritos.contains(libro.id) || idsFavoritos.contains(idLimpio)
                         TarjetaLibroBusqueda(
                             libro = libro,
                             estaGuardado = guardado,
+                            esFavorito = esFavorito,
                             alSeleccionarLibro = alSeleccionarLibro,
                             alGuardarLibro = { viewModel.guardarLibro(it) },
+                            alAlternarFavorito = { viewModel.alternarFavorito(it) },
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                         )
                     }
