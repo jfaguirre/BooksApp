@@ -353,6 +353,7 @@ fun PantallaInicio(
                             estado.libroDelMomento?.let { libroMomento ->
                                 TarjetaLibroDestacado(
                                     libro = libroMomento,
+                                    alHacerClic = { alSeleccionarLibro(it) },
                                     alHacerClicAnadir = { /* Añadido a biblioteca */ },
                                     alAlternarFavorito = { viewModel.alternarFavorito(it) }
                                 )
@@ -540,6 +541,7 @@ fun PantallaInicio(
                                     TarjetaTendenciaComunidad(
                                         posicion = indice + 1,
                                         libro = libro,
+                                        alHacerClic = { alSeleccionarLibro(it) },
                                         alHacerClicAnadir = { /* Añadir libro */ }
                                     )
                                 }

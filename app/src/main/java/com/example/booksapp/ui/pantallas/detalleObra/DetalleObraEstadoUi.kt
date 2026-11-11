@@ -34,3 +34,4 @@ sealed interface DetalleObraEstadoUi {
         val esErrorRed: Boolean = false
     ) : DetalleObraEstadoUi
 }
+
