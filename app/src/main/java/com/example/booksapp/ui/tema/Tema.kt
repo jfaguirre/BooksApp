@@ -1,10 +1,12 @@
 package com.example.booksapp.ui.tema
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 // Esquema de colores para modo claro
 private val EsquemaColorClaro = lightColorScheme(
@@ -61,7 +63,7 @@ private val EsquemaColorOscuro = darkColorScheme(
 
 @Composable
 fun BooksAppTema(
-    esModoOscuro: Boolean = isSystemInDarkTheme(),
+    esModoOscuro: Boolean = false,
     contenido: @Composable () -> Unit
 ) {
     val esquemaColor = if (esModoOscuro) EsquemaColorOscuro else EsquemaColorClaro
@@ -69,7 +71,13 @@ fun BooksAppTema(
     MaterialTheme(
         colorScheme = esquemaColor,
         typography = TipografiaBooksApp,
-        shapes = FormasBooksApp,
-        content = contenido
-    )
+        shapes = FormasBooksApp
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            contenido()
+        }
+    }
 }

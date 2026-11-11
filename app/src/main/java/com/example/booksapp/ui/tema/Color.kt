@@ -8,7 +8,7 @@ val ContenedorPrimario = Color(0xFF81005E)
 val SobrePrimario = Color(0xFFFFFFFF)
 val SobreContenedorPrimario = Color(0xFFFF86CD)
 val PrimarioFijo = Color(0xFFFFD8EA)
-val PrimarioFijoAtenuado = Color(0xFFAAED9)
+val PrimarioFijoAtenuado = Color(0xFFFFAED9)
 val SobrePrimarioFijo = Color(0xFF3C002A)
 
 val Secundario = Color(0xFFB9104D)
