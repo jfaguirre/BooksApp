@@ -1,9 +1,12 @@
 package com.example.booksapp.ui.pantallas.inicio
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.booksapp.datos.local.EstadoLectura
 import com.example.booksapp.datos.modelos.CategoriaModelo
 import com.example.booksapp.datos.modelos.LibroModelo
+import com.example.booksapp.datos.repositorios.BibliotecaRepositorio
 import com.example.booksapp.datos.repositorios.LibroRepositorio
 import com.example.booksapp.datos.repositorios.LibroRepositorioImpl
 import kotlinx.coroutines.async
@@ -15,9 +18,11 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel que coordina los datos de Open Library y el estado de la pantalla de Inicio.
+ * También permite guardar libros en la biblioteca local a través del [BibliotecaRepositorio].
  */
 class InicioViewModel(
-    private val repositorio: LibroRepositorio = LibroRepositorioImpl()
+    private val repositorio: LibroRepositorio = LibroRepositorioImpl(),
+    private val bibliotecaRepositorio: BibliotecaRepositorio? = null
 ) : ViewModel() {
 
     private val _estadoUi = MutableStateFlow<InicioEstadoUi>(InicioEstadoUi.Cargando)
@@ -99,7 +104,7 @@ class InicioViewModel(
     }
 
     /**
-     * Alterna el estado de favorito de un libro.
+     * Alterna el estado de favorito de un libro en la UI.
      */
     fun alternarFavorito(libro: LibroModelo) {
         val estadoActual = _estadoUi.value
@@ -134,4 +139,43 @@ class InicioViewModel(
             }
         }
     }
+
+    /**
+     * Guarda un libro en la biblioteca personal local.
+     */
+    fun añadirABiblioteca(libro: LibroModelo) {
+        val repo = bibliotecaRepositorio ?: return
+        viewModelScope.launch {
+            repo.guardarLibro(libro, EstadoLectura.POR_LEER)
+            // Actualiza la UI para reflejar que el libro fue añadido
+            val estadoActual = _estadoUi.value as? InicioEstadoUi.Exito ?: return@launch
+            _estadoUi.update {
+                (it as InicioEstadoUi.Exito).copy(mensajeConfirmacion = "\"${libro.titulo}\" añadido a tu biblioteca")
+            }
+        }
+    }
+
+    /**
+     * Limpia el mensaje de confirmación del snackbar.
+     */
+    fun limpiarMensaje() {
+        val estadoActual = _estadoUi.value as? InicioEstadoUi.Exito ?: return
+        _estadoUi.update { (it as InicioEstadoUi.Exito).copy(mensajeConfirmacion = null) }
+    }
+
+    // ─── FACTORY ─────────────────────────────────────────────────────────────
+
+    class Factory(
+        private val repositorio: LibroRepositorio = LibroRepositorioImpl(),
+        private val bibliotecaRepositorio: BibliotecaRepositorio? = null
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(InicioViewModel::class.java)) {
+                return InicioViewModel(repositorio, bibliotecaRepositorio) as T
+            }
+            throw IllegalArgumentException("ViewModel desconocido: ${modelClass.name}")
+        }
+    }
 }
+

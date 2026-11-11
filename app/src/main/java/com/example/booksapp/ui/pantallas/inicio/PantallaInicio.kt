@@ -35,19 +35,26 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.booksapp.BooksApplication
 import com.example.booksapp.R
 import com.example.booksapp.datos.modelos.LibroModelo
 import com.example.booksapp.ui.componentes.BarraSuperior
@@ -70,15 +77,39 @@ import com.example.booksapp.ui.tema.TerciarioFijo
 @Composable
 fun PantallaInicio(
     modifier: Modifier = Modifier,
-    viewModel: InicioViewModel = viewModel(),
     alSeleccionarLibro: (LibroModelo) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as BooksApplication
+    val viewModel: InicioViewModel = viewModel(
+        factory = InicioViewModel.Factory(
+            bibliotecaRepositorio = application.bibliotecaRepositorio
+        )
+    )
     val estadoUi by viewModel.estadoUi.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Efecto para mostrar snackbar de confirmación al añadir libro
+    LaunchedEffect(estadoUi) {
+        val estado = estadoUi as? InicioEstadoUi.Exito ?: return@LaunchedEffect
+        val mensaje = estado.mensajeConfirmacion ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(message = mensaje)
+        viewModel.limpiarMensaje()
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             BarraSuperior()
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { datos ->
+                Snackbar(
+                    snackbarData = datos,
+                    containerColor = Terciario,
+                    contentColor = Color.White
+                )
+            }
         }
     ) { rellenoSuperior ->
         when (val estado = estadoUi) {
@@ -353,7 +384,7 @@ fun PantallaInicio(
                             estado.libroDelMomento?.let { libroMomento ->
                                 TarjetaLibroDestacado(
                                     libro = libroMomento,
-                                    alHacerClicAnadir = { /* Añadido a biblioteca */ },
+                                    alHacerClicAnadir = { viewModel.añadirABiblioteca(it) },
                                     alAlternarFavorito = { viewModel.alternarFavorito(it) }
                                 )
                             }
@@ -540,7 +571,7 @@ fun PantallaInicio(
                                     TarjetaTendenciaComunidad(
                                         posicion = indice + 1,
                                         libro = libro,
-                                        alHacerClicAnadir = { /* Añadir libro */ }
+                                        alHacerClicAnadir = { viewModel.añadirABiblioteca(libro) }
                                     )
                                 }
                             }

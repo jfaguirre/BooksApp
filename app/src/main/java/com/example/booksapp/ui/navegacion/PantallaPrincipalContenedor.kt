@@ -28,6 +28,7 @@ import com.example.booksapp.R
 import com.example.booksapp.ui.componentes.BarraNavegacionInferior
 import com.example.booksapp.ui.componentes.DestinoNavegacion
 import com.example.booksapp.ui.pantallas.inicio.PantallaInicio
+import com.example.booksapp.ui.pantallas.mislibros.PantallaMisLibros
 import com.example.booksapp.ui.tema.ContenedorPrimario
 
 /**
@@ -58,8 +59,11 @@ fun PantallaPrincipalContenedor(
                     PantallaInicio()
                 }
 
+                DestinoNavegacion.MIS_LIBROS -> {
+                    PantallaMisLibros()
+                }
+
                 DestinoNavegacion.BUSCAR,
-                DestinoNavegacion.MIS_LIBROS,
                 DestinoNavegacion.MI_LECTURA -> {
                     PantallaProximamente(destino = destinoActual)
                 }
