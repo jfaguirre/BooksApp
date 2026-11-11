@@ -24,7 +24,8 @@ sealed interface InicioEstadoUi {
         val libroDelMomento: LibroModelo? = null,
         val librosFiccionYFantasia: List<LibroModelo> = emptyList(),
         val librosSciFiYDistopia: List<LibroModelo> = emptyList(),
-        val tendenciasComunidad: List<LibroModelo> = emptyList()
+        val tendenciasComunidad: List<LibroModelo> = emptyList(),
+        val mensajeConfirmacion: String? = null
     ) : InicioEstadoUi
 
     /**

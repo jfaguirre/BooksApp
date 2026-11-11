@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -34,6 +35,25 @@ android {
     buildFeatures {
         compose = true
     }
+
+    sourceSets {
+        getByName("debug") {
+            java.directories.addAll(
+                listOf(
+                    file("build/generated/ksp/debug/kotlin").path,
+                    file("build/generated/ksp/debug/java").path
+                )
+            )
+        }
+        getByName("release") {
+            java.directories.addAll(
+                listOf(
+                    file("build/generated/ksp/release/kotlin").path,
+                    file("build/generated/ksp/release/java").path
+                )
+            )
+        }
+    }
 }
 
 dependencies {
@@ -55,6 +75,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
+
+    // Room (Base de datos local)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
