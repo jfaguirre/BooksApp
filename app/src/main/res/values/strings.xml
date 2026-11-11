@@ -89,6 +89,32 @@
     <string name="mi_lectura_continuar_corto">Continuar</string>
     <string name="mi_lectura_marcado_leido">¡Libro completado!</string>
 
+    <!-- Mi Lectura – Secciones completas -->
+    <string name="mi_lectura_seccion_resumen">Resumen de lectura</string>
+    <string name="mi_lectura_total_biblioteca">En biblioteca</string>
+    <string name="mi_lectura_total_por_leer">Por leer</string>
+    <string name="mi_lectura_total_leyendo">Leyendo</string>
+    <string name="mi_lectura_total_leidos">Terminados</string>
+    <string name="mi_lectura_seccion_leyendo">Actualmente leyendo</string>
+    <string name="mi_lectura_seccion_proximas">Próximas lecturas</string>
+    <string name="mi_lectura_seccion_terminados">Libros terminados</string>
+    <string name="mi_lectura_seccion_estadisticas">Estadísticas de lectura</string>
+    <string name="mi_lectura_estadistica_terminados">Libros terminados</string>
+    <string name="mi_lectura_estadistica_en_progreso">En progreso</string>
+    <string name="mi_lectura_estadistica_pendientes">Pendientes</string>
+    <string name="mi_lectura_estadistica_porcentaje">Porcentaje completado</string>
+    <string name="mi_lectura_boton_empezar">Empezar a leer</string>
+    <string name="mi_lectura_vacio_biblioteca_titulo">Tu biblioteca está vacía</string>
+    <string name="mi_lectura_vacio_biblioteca_subtitulo">Explora el catálogo desde Inicio o Buscar y agrega libros a tu biblioteca para comenzar.</string>
+    <string name="mi_lectura_vacio_leyendo_titulo">Sin lecturas activas</string>
+    <string name="mi_lectura_vacio_leyendo_subtitulo">Selecciona un libro de tu biblioteca y comienza a leerlo.</string>
+    <string name="mi_lectura_vacio_proximas_titulo">Sin próximas lecturas</string>
+    <string name="mi_lectura_vacio_proximas_subtitulo">Agrega libros a tu lista de pendientes desde Inicio o Mis Libros.</string>
+    <string name="mi_lectura_vacio_terminados_titulo">Sin libros terminados</string>
+    <string name="mi_lectura_vacio_terminados_subtitulo">Cuando termines un libro, aparecerá aquí. ¡Sigue leyendo!</string>
+    <string name="mi_lectura_badge_por_leer">Por leer</string>
+    <string name="mi_lectura_badge_leido">Leído</string>
+
     <!-- Diálogo de Nombre de Usuario -->
     <string name="dialogo_nombre_titulo">Personalizar tu nombre</string>
     <string name="dialogo_nombre_descripcion">Ingresa tu nombre para personalizar tu saludo y experiencia en BooksApp.</string>
